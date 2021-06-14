@@ -1,0 +1,152 @@
+=================================
+Data is parsed from characteristic 0xFFF4 (Notify endpoint) as received. Buffer:
+  rx[0]=bytesInPage .. might be length minus the two-byte header (special handling if > 128 bytes .. invalid msg?)
+  rx[1]= current page (high octet) and maxPages
+        if currentPage=1, a new packet is started. if currentPage==maxPage, the packet is finished   
+
+  rx[2].. rx[len] == content
+    0 rx[2] = '3A' mostly const
+    1 rx[3] = '03' mostly const
+    2 rx[4] = '05' mostly const
+    3 rx[5] = opCode (see below)
+
+  After every page received, an ACK is issued to 0xFFF3 (write endpoint). It sends back the length and page received (rxBuffer) as a WriteWithoutResponse command.
+  with the highest bit (128) to 1. ACKs are used on both sides of the communication
+
+====
+rx[3] = opCode
+
+BmsBt::commPacketParser OPCodes parser 
+* 0x11	ramReadAck()
+* 0x15  flashReadAck()
+* 0x19  i2cReadAck()
+* 0x21  i2cWrAck()
+* 0x32  tokenrightFree ??   << password
+* 0x33  tokenrightRufuse ?? << password refused
+* 0x60  overview stats  ---> 
+	txBuf[6], txBuf[7] --> Voltage
+	txBuf[12], txBuf[13] --> Current
+	txBuf[14], txBuf[15] --> fullChargeCap
+         [....] see commPacketParser
+* 0x61  more stats (factoryCap, temperature, noChargeTime, cycleCount)
+* 0x62  individual cell voltages
+
+
+=======
+WRITES: Go to 0xFFF3 (Write endpoint)
+
+txBuffer = 20 bytes (2 bytes of these are headers)
+  data is thus sent in 18 byte pages
+
+tx[0] = numBytesWritten (bufferLen % 18, but explicitly set to "18" if len==18)
+tx[1] = (currentPage << 4) | (maxPages & 0xF)
+tx[2..X] = content of txBuffer (see below)
+
+
+txBuffer contents:
+	             0  1  2  3  4  5  6  7  8 9 
+                              opcode
+start general com   3A 03 05 65 00 02 ?? ?? ?? ?? 0D 0A  	maybe "password"?
+seq 0:              3A 03 05 60 00 00 00 68 0D 0A	?
+seq 1:              3A 03 05 61 00 00 00 69 0D 0A	?
+seq 2:              3A 03 05 62 00 00 00 6A 0D 0A	?
+flash rd: 	    3A 03 05 14 00 06 |A4 A3 A2 A1 L2 L1 C2 C1| 0D 0A { where A = addr, L=len, C=checksum
+	3200 <= flashReadAddr <= 0x3C120   ... flashReadAddr += 8
+         checksum += tx[i+1] for ( i = 0; i <= 10u; ++i )  
+  }
+i2c_read	    3A 03 05 18 00 04 55  |a2 a3 a3 c1 c2| 0D 0A     
+i2c_write           3A 03 06 20 |A1 A1| 55 |A2 L L| |D1 D2 D3 ... DL C1 C2| 0D 0A
+
+======
+Server Rx MTU: 23
+   
+    [Source BD_ADDR: TexasIns_d4:e0:61 (f8:33:31:d4:e0:61)]
+    [Source Device Name: DXB-26300194]
+
+Log:
+Phone first asks to receive notificat	ions from 0xFFF4:
+  877 Phone -> BMS @ Write Request (0x12) [Characteristic UUID: Unknown (0xfff4)] [UUID: Client Characteristic Conf (0x2902)]  0x0001 (Notification: True)  .. 0100
+Phone startGeneralCommunications() with password:
+  881 Phone -> BMS @ 0xFFF3: 0c 11 3a 03 05 65 00 02[01 94 01 04]0d 0a 00 00 f0 76 3d 0c
+                            len page 3a 03 05 op      password
+   			    password is part of Name (0194 --> 01 94 in "hex") .. last two bytes are "checksum" (0x01+0x94+111 -> 0x0104)
+  884 BMS -> Phone @ 0xFFF4 -- ACK:        8c 11 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  886 BMS -> Phone @ 0xFFF4 -- PW Correct: 0b 11 3a 05 03 32 00 01 02 00 3d 0d 0a 00 00 00 00 00 00 00
+  887 Phone -> BMS @ 0xFFF3 -- ACK:        8b 11 3a 05 03 32 00 01 02 00 3d 0d 0a 00 00 00 00 00 00 00
+  889 Phone -> BMS @ 0xFFF3 -- GetStats:   0a 11 3a 03 05 60 00 00 00 68 0d 0a 00 00 00 00 00 00 00 00
+  891 Phone -> BMS @ 0xFFF3 (repeatAck):   8b 11 3a 05 03 32 00 01 02 00 3d 0d 0a 00 00 00 00 00 00 00
+  892 BMS -> Phone @ 0xFFF4 -- AckStats:   8a 11 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  894 BMS -> Phone @ 0xFFF4 -- Stats1/2:   12 12 3a 05 03 60 00 0a 01 92 00 00 2d d2 29 e9 5b 00 03 71 
+  895 Phone -> BMS        --  ACK          92 12 3a 05 03 60 00 0a 01 92 00 00 2d d2 29 e9 5b 00 03 71
+  897 BMS -> Phone        --  Stats2/2     02 22 0d 0a 03 60 00 0a 01 92 00 00 2d d2 29 e9 5b 00 03 71
+  898 Phone -> BMS        --  ACK          82 22 0d 0a 03 60 00 0a 01 92 00 00 2d d2 29 e9 5b 00 03 71
+  900 Phone -> BMS        --  ExtStats     0a 11 3a 03 05 61 00 00 00 69 0d 0a 75 00 00 00 90 12 3c 0c
+  902 Phone -> BMS        -- (repeatAck)   82 22 0d 0a 03 60 00 0a 01 92 00 00 2d d2 29 e9 5b 00 03 71
+  903 BMS -> Phone        -- ACK           8a 11 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  905 BMS -> Phone        -- ExtStats1/2   12 12 3a 05 03 61 00 0c 00 4e 00 01 2c 88 0b 80 78 c6 e3 22
+  906 BMS -> Phone        -- ExtStats2/2   04 22 04 46 0d 0a 00 0c 00 4e 00 01 2c 88 0b 80 78 c6 e3 22
+  907 Phone -> BMS        -- ACK           92 12 3a 05 03 61 00 0c 00 4e 00 01 2c 88 0b 80 78 c6 e3 22
+  908 Phone -> BMS        -- ACK           84 22 04 46 0d 0a 00 0c 00 4e 00 01 2c 88 0b 80 78 c6 e3 22
+  910 Phone -> BMS        -- ReqMoarStats  0a 11 3a 03 05 62 00 00 00 6a 0d 0a 00 00 00 00 00 00 00 00
+  911 Phone -> BMS        -- (repeatAck)   84 22 04 46 0d 0a 00 0c 00 4e 00 01 2c 88 0b 80 78 c6 e3 22
+  913 BMS -> Phone        -- ACK           8a 11 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  915 BMS -> Phone        -- MoarStats     12 12 3a 05 03 62 00 15 0a 0f be 0f bf 0f c0 0f c1 0f bf 0f
+  916 Phone -> BMS        -- ACK           92 12 3a 05 03 62 00 15 0a 0f be 0f bf 0f c0 0f c1 0f bf 0f
+  918 BMS -> Phone        -- MoarStats2    0d 22 bc 0f bc 0f ba 0f bd 0f b8 08 83 0d 0a 0f c1 0f bf 0f
+  919 Phone -> BMS        -- ACK           8d 22 bc 0f bc 0f ba 0f bd 0f b8 08 83 0d 0a 0f c1 0f bf 0f
+  920 Phone -> BMS        -- Stats1 again  0a 11 3a 03 05 60 00 00 00 68 0d 0a 00 00 00 00 00 00 00 00
+  [...]
+
+
+
+
+----
+  894 BMS -> Phone @ 0xFFF4 -- Stats1/2:   12 12 3a 05 03 60 00 0a 01 92 00 00 2d d2 29 e9 5b 00 03 71 
+						             || || ---> ? ? ?: 0x000A = 10  ???
+								   || || --> Voltage: 0x0192 / 10 --> 40.2V
+									 || || --> Current: 0x0000 / 10 -> 0.0A	
+									       || || "Full Charge Cap" 0x2dd2 = 11730 mA 
+										     || || "Remaining Cap" 0x29E9 = 10729 mA
+											   || "Remaining Cap Percent" 0x5B = 91
+
+
+ExtStats (0x61):
+  00 0c 00 4e 00 01 2c 88 0b 80 78 c6 e3 22 04 46 0d 0a
+  00 0c unk2
+  00 4e "noChargeTime"
+  00 01 cycle count
+  2c 88 "factoryCapacity"
+  0b 80 "temperature"
+  78 c6 e3 22 04 46 0d 0a
+
+Stats3 (0x62):
+  00 15 0a 0f be 0f bf 0f c0 0f c1 0f bf 0f bc 0f bc 0f ba 0f bd 0f b8 08 83 0d 0a
+  00 15 unk3
+  0a NumCells
+  0f be vol1 (mV)
+  0f bf -- v2
+  0f c0 -- v3
+  0f c1 -- v4
+  0f bf -- v5
+  0f bc -- v6
+  0f bc -- v7
+  0f ba -- v8
+  0f bd -- v9
+  0f b8 -- v10
+  08 83 -- ??
+			
+2021-04-30 14:01:09.322 17233-17264/com.   0c 11 3a 03 05 65 00 02 01 94 01 04 0d 0a 00 00 00 00 00 00
+
+
+
+
+
+
+
+
+
+
+
+
+
+

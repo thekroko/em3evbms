@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PerCellCompoundView">
+        <attr name="cellId" format="string"/>
+        <attr name="cellMilliVolts" format="integer" />
+    </declare-styleable>
+</resources>
