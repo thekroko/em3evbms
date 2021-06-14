@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    tools:context=".BmsInfoActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        app:navigationIcon="@drawable/back"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="1">
+
+            <TableRow
+                style="@style/Header"
+                android:layout_marginTop="0dp">
+
+                <ImageView
+                    app:srcCompat="@drawable/battery_level"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    style="@style/HeaderText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_span="2"
+                    android:text="Overview" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_span="2"
+                    android:text="Status:" />
+
+                <TextView
+                    android:id="@+id/status"
+                    style="@style/ItemValue"
+                    android:text="Not Connected" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_span="2"
+                    android:text="Battery Level (%):" />
+
+                <TextView
+                    android:id="@+id/batteryLevel"
+                    style="@style/ItemValue"
+                    tools:text="1234" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_span="2"
+                    android:text="Voltage:" />
+
+                <TextView
+                    android:id="@+id/voltage"
+                    style="@style/ItemValue"
+                    tools:text="123" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_span="2"
+                    android:text="Temperature:" />
+
+                <TextView
+                    android:id="@+id/temperature"
+                    style="@style/ItemValue"
+                    tools:text="123" />
+            </TableRow>
+
+            <TableRow style="@style/Header">
+
+                <ImageView
+                    app:srcCompat="@drawable/charge_discharge"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    style="@style/HeaderText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_span="2"
+                    android:text="Usage" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_span="2"
+                    android:text="Current (A):" />
+
+                <TextView
+                    android:id="@+id/current"
+                    style="@style/ItemValue"
+                    tools:text="123" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_span="2"
+                    android:text="Power (W):" />
+
+                <TextView
+                    android:id="@+id/power"
+                    style="@style/ItemValue"
+                    tools:text="123" />
+            </TableRow>
+
+            <TableRow style="@style/Header">
+
+                <ImageView
+                    app:srcCompat="@drawable/charging_cycles"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    style="@style/HeaderText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_span="2"
+                    android:text="Battery Health" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_span="2"
+                    android:text="Charge Cycles:" />
+
+                <TextView
+                    android:id="@+id/chargeCycles"
+                    style="@style/ItemValue"
+                    tools:text="123" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_span="2"
+                    android:text="Remaining max capacity:" />
+
+                <TextView
+                    android:id="@+id/remainingCapacity"
+                    style="@style/ItemValue"
+                    tools:text="123" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_span="2"
+                    android:text="Capacity when manufactured:" />
+
+                <TextView
+                    android:id="@+id/factoryCapacity"
+                    style="@style/ItemValue"
+                    tools:text="123" />
+            </TableRow>
+
+            <TableRow style="@style/Header">
+
+                <ImageView
+                    app:srcCompat="@drawable/cell_stats"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    style="@style/HeaderText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_span="2"
+                    android:text="Per-Cell stats" />
+            </TableRow>
+
+            <TableRow>
+
+                <TextView
+                    android:layout_span="2"
+                    android:text="Number of Cells:" />
+
+                <TextView
+                    android:id="@+id/numberOfCells"
+                    style="@style/ItemValue"
+                    tools:text="123" />
+            </TableRow>
+
+            <com.kroko.bmsmonitor.PerCellCompoundView
+                android:id="@+id/cell1"
+                app:cellId="1" />
+
+            <com.kroko.bmsmonitor.PerCellCompoundView
+                android:id="@+id/cell2"
+                app:cellId="2" />
+
+            <com.kroko.bmsmonitor.PerCellCompoundView
+                android:id="@+id/cell3"
+                app:cellId="3" />
+
+            <com.kroko.bmsmonitor.PerCellCompoundView
+                android:id="@+id/cell4"
+                app:cellId="4" />
+
+            <com.kroko.bmsmonitor.PerCellCompoundView
+                android:id="@+id/cell5"
+                app:cellId="5" />
+
+            <com.kroko.bmsmonitor.PerCellCompoundView
+                android:id="@+id/cell6"
+                app:cellId="6" />
+
+            <com.kroko.bmsmonitor.PerCellCompoundView
+                android:id="@+id/cell7"
+                app:cellId="7" />
+
+            <com.kroko.bmsmonitor.PerCellCompoundView
+                android:id="@+id/cell8"
+                app:cellId="8" />
+
+            <com.kroko.bmsmonitor.PerCellCompoundView
+                android:id="@+id/cell9"
+                app:cellId="9" />
+
+            <com.kroko.bmsmonitor.PerCellCompoundView
+                android:id="@+id/cell10"
+                app:cellId="10" />
+
+            <com.kroko.bmsmonitor.PerCellCompoundView
+                android:id="@+id/cell11"
+                app:cellId="11" />
+
+            <com.kroko.bmsmonitor.PerCellCompoundView
+                android:id="@+id/cell12"
+                app:cellId="12" />
+
+            <com.kroko.bmsmonitor.PerCellCompoundView
+                android:id="@+id/cell13"
+                app:cellId="13" />
+
+            <com.kroko.bmsmonitor.PerCellCompoundView
+                android:id="@+id/cell14"
+                app:cellId="14" />
+
+            <com.kroko.bmsmonitor.PerCellCompoundView
+                android:id="@+id/cell15"
+                app:cellId="15" />
+
+            <com.kroko.bmsmonitor.PerCellCompoundView
+                android:id="@+id/cell16"
+                app:cellId="16" />
+        </TableLayout>
+    </ScrollView>
+
+</LinearLayout>

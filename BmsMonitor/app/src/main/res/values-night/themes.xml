@@ -1,0 +1,18 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.BmsMonitor" parent="Theme.MaterialComponents">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/NprimaryColor</item>
+        <item name="colorPrimaryVariant">@color/NprimaryLightColor</item>
+        <item name="colorOnPrimary">@color/NprimaryTextColor</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/NsecondaryColor</item>
+        <item name="colorSecondaryVariant">@color/NsecondaryLightColor</item>
+        <item name="colorOnSecondary">@color/NsecondaryTextColor</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+</resources>

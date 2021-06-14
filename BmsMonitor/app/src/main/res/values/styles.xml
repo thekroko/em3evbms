@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Header" parent="TextAppearance.AppCompat">
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="android:layout_marginTop">24dp</item>
+        <item name="android:paddingLeft">4dp</item>
+    </style>
+    <style name="HeaderText" parent="TextAppearance.AppCompat">
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+    </style>
+    <style name="ItemValue" parent="TextAppearance.AppCompat">
+        <item name="android:textAlignment">textEnd</item>
+    </style>
+</resources>
