@@ -130,13 +130,13 @@ class BmsInfoActivity : BluetoothRequiredActivity(), Em3evBms.DataUpdateHandler 
                 vSum += cellVolt
                 cells[i].setMilliVolts(cellVolt)
             }
-            if (cells.isEmpty() || vMax == 0) {
+            if (data.numCells == 0 || vMax == 0) {
                 binder.vavg.text =  "-"
                 binder.vmin.text =  "-"
                 binder.vmax.text =  "-"
                 binder.vdelta.text =  "-"
             } else {
-                binder.vavg.text = "${vSum / cells.size} mV"
+                binder.vavg.text = "${vSum / data.numCells} mV"
                 binder.vmin.text = "${vMin} mV"
                 binder.vmax.text = "${vMax} mV"
                 binder.vdelta.text = "${vMax - vMin} mV"
