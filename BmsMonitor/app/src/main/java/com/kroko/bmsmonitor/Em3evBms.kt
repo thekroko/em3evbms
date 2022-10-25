@@ -180,7 +180,7 @@ class Em3evBms(private val ctx: Context, private val device: BluetoothDevice, va
                 .readUShort { bmsData.noChargeTime = it }
                 .readUShort { bmsData.cycleCount = it }
                 .readUShort { bmsData.factoryCapacity = it }
-                .readUShort { bmsData.temperature = it / 100.0}
+                .readUShort { bmsData.temperature = (it / 10.0) - 273.15 /* Kelvin to Celsius */}
             CommandReceiver.BmsToPhoneCmd.Stats3 -> {
                 val reader = BinaryReader(rx).skip(2)
                 bmsData.numCells = reader.readUByte()
