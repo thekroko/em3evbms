@@ -6,22 +6,21 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
-import android.preference.PreferenceDataStore
 import android.text.Editable
 import android.text.InputType
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.postDelayed
 import com.kroko.bmsmonitor.databinding.ActivityBmsInfoBinding
-import java.time.Instant
+import java.lang.Integer.max
+import kotlin.math.min
 
 
 class BmsInfoActivity : BluetoothRequiredActivity(), Em3evBms.DataUpdateHandler {
-    private fun deviceName() : String { return intent.getStringExtra("name")}
-    private fun address() : String { return intent.getStringExtra("address")}
+    private fun deviceName() : String { return intent.getStringExtra("name") ?: ""}
+    private fun address() : String { return intent.getStringExtra("address") ?: ""}
     private lateinit var deviceNameMgr: DeviceNameMgr
     lateinit var binder: ActivityBmsInfoBinding
     lateinit var bms : Em3evBms
@@ -121,8 +120,26 @@ class BmsInfoActivity : BluetoothRequiredActivity(), Em3evBms.DataUpdateHandler 
             binder.remainingCapacity.text = "${data.fullChargeCapacity} mA ($remainingCapacityPercent%)"
             binder.factoryCapacity.text = "${data.factoryCapacity} mA"
             val cells = arrayOf(binder.cell1, binder.cell2, binder.cell3, binder.cell4, binder.cell5, binder.cell6, binder.cell7, binder.cell8, binder.cell9, binder.cell10, binder.cell11, binder.cell12, binder.cell13, binder.cell14, binder.cell14, binder.cell15, binder.cell16)
+            var vMin = Integer.MAX_VALUE
+            var vMax = 0
+            var vSum = 0
             for (i in 0 until data.numCells) {
-                cells[i].setMilliVolts(data.cellVoltages[i])
+                val cellVolt = data.cellVoltages[i]
+                vMin = if (cellVolt < vMin) cellVolt else vMin;
+                vMax = if (cellVolt > vMax) cellVolt else vMax;
+                vSum += cellVolt
+                cells[i].setMilliVolts(cellVolt)
+            }
+            if (cells.isEmpty() || vMax == 0) {
+                binder.vavg.text =  "-"
+                binder.vmin.text =  "-"
+                binder.vmax.text =  "-"
+                binder.vdelta.text =  "-"
+            } else {
+                binder.vavg.text = "${vSum / cells.size} mV"
+                binder.vmin.text = "${vMin} mV"
+                binder.vmax.text = "${vMax} mV"
+                binder.vdelta.text = "${vMax - vMin} mV"
             }
         }
     }

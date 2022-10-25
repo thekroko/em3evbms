@@ -202,6 +202,42 @@
                     style="@style/ItemValue"
                     tools:text="123" />
             </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_span="2"
+                    android:text="V(max):" />
+                <TextView
+                    android:id="@+id/vmax"
+                    style="@style/ItemValue"
+                    tools:text="123" />
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_span="2"
+                    android:text="V(min):" />
+                <TextView
+                    android:id="@+id/vmin"
+                    style="@style/ItemValue"
+                    tools:text="123" />
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_span="2"
+                    android:text="V(avg):" />
+                <TextView
+                    android:id="@+id/vavg"
+                    style="@style/ItemValue"
+                    tools:text="123" />
+            </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_span="2"
+                    android:text="V(delta):" />
+                <TextView
+                    android:id="@+id/vdelta"
+                    style="@style/ItemValue"
+                    tools:text="123" />
+            </TableRow>
 
             <com.kroko.bmsmonitor.PerCellCompoundView
                 android:id="@+id/cell1"
