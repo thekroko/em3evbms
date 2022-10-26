@@ -27,7 +27,7 @@
                 android:id="@+id/textView3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Click to search for compatible BLE devices:" />
+                android:text="Clicking the button below will request bluetooth and fine grained location permissions to search for nearby BLE devices." />
 
             <Button
                 android:id="@+id/buttonStartScanning"
@@ -53,6 +53,14 @@
                 android:layout_height="wrap_content"
                 android:text="DBG"
                 android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="\nPrivacy Policy: The EM3EV BMS app does not collect or share any user data."
+                android:textAlignment="textStart"
+                android:textStyle="italic" />
         </LinearLayout>
     </ScrollView>
 

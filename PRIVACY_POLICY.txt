@@ -1,0 +1,8 @@
+==================
+Privacy Policy:
+==================
+The EM3EV BMS app does not collect or share any user data. No data is retained.
+
+Fine grained location + Bluetooth permissions are requested and used when the user clicks the "Start Scanning" button to scan for nearby bluetooth low-energy devices matching the "DXB-" prefix used by the battery monitoring system.
+
+If you have any concern, please contact us either via https://github.com/thekroko/em3evbms or by sending an email to 3653062+thekroko@users.noreply.github.com
